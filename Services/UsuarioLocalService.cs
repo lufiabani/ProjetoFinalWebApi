@@ -3,6 +3,7 @@ using System.Security.Claims;
 using DesenvWebApi.Api.Data;
 using DesenvWebApi.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 // UsuarioLocalService.cs — espelha o utilizador autenticado na tabela Usuarios (chave KeycloakSub).
 namespace DesenvWebApi.Api.Services;
@@ -45,15 +46,29 @@ public class UsuarioLocalService : IUsuarioLocalService
                 AtualizadoEm = agora
             };
             _db.Usuarios.Add(usuario);
-        }
-        else
-        {
-            usuario.Email = email;
-            usuario.NomeExibicao = nome;
-            usuario.AtualizadoEm = agora;
+            try
+            {
+                await _db.SaveChangesAsync(cancellationToken);
+                return usuario;
+            }
+            catch (DbUpdateException ex) when (EhViolacaoUniqueKeycloakSub(ex))
+            {
+                // Vários pedidos em paralelo (ex.: /me + /favoritos no primeiro acesso) podem tentar inserir ao mesmo tempo.
+                _db.Entry(usuario).State = EntityState.Detached;
+                usuario = await _db.Usuarios.FirstOrDefaultAsync(u => u.KeycloakSub == sub, cancellationToken);
+                if (usuario is null)
+                    throw;
+            }
         }
 
+        usuario.Email = email;
+        usuario.NomeExibicao = nome;
+        usuario.AtualizadoEm = agora;
         await _db.SaveChangesAsync(cancellationToken);
         return usuario;
     }
+
+    // PostgreSQL 23505 — outro pedido já criou o Utilizador com o mesmo KeycloakSub.
+    private static bool EhViolacaoUniqueKeycloakSub(DbUpdateException ex) =>
+        ex.InnerException is PostgresException pg && pg.SqlState == PostgresErrorCodes.UniqueViolation;
 }
