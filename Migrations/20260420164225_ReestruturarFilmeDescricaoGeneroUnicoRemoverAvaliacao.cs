@@ -64,7 +64,7 @@ namespace DesenvWebApi.Api.Migrations
                 type: "integer",
                 nullable: true);
 
-            // Um género por filme: primeiro género associado em FilmeGeneros; se não houver, cai no primeiro género cadastrado.
+            // Um gênero por filme: primeiro gênero associado em FilmeGeneros; se não houver, cai no primeiro gênero cadastrado.
             migrationBuilder.Sql("""
                 UPDATE "Filmes" f
                 SET "GeneroId" = (
@@ -73,10 +73,10 @@ namespace DesenvWebApi.Api.Migrations
                 );
                 """);
 
-            // Se não existir nenhum género, INSERT garante um Id para satisfazer FK e NOT NULL (bases de desenvolvimento vazias).
+            // Se não existir nenhum gênero, INSERT garante um Id para satisfazer FK e NOT NULL (bases de desenvolvimento vazias).
             migrationBuilder.Sql("""
                 INSERT INTO "Generos" ("TmdbId", "Nome", "SincronizadoEm")
-                SELECT -1, 'Sem género sincronizado', NOW() AT TIME ZONE 'UTC'
+                SELECT -1, 'Sem gênero sincronizado', NOW() AT TIME ZONE 'UTC'
                 WHERE NOT EXISTS (SELECT 1 FROM "Generos");
                 """);
 

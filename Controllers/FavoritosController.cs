@@ -22,7 +22,7 @@ public class FavoritosController : ControllerBase
         _usuarios = usuarios;
     }
 
-    // GET /api/favoritos — lista com Filme (e género/descrição) para o painel lateral do SPA.
+    // GET /api/favoritos — lista com Filme (e gênero/descrição) para o painel lateral do SPA.
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Favorito>>> MeusFavoritos(CancellationToken cancellationToken)
     {

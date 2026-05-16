@@ -37,7 +37,7 @@ public class GenerosController : ControllerBase
     [HttpPost("sync")]
     public async Task<IActionResult> Sincronizar([FromBody] JsonElement corpo, CancellationToken cancellationToken)
     {
-        // Corpo pode ser um array de géneros ou o objeto raiz do TMDB com propriedade "genres".
+        // Corpo pode ser um array de gêneros ou o objeto raiz do TMDB com propriedade "genres".
         var arr = corpo.ValueKind == JsonValueKind.Array
             ? corpo
             : corpo.TryGetProperty("genres", out var g) && g.ValueKind == JsonValueKind.Array
@@ -45,7 +45,7 @@ public class GenerosController : ControllerBase
                 : default;
 
         if (arr.ValueKind != JsonValueKind.Array)
-            return BadRequest(new { mensagem = "Envie um array JSON de géneros ou um objeto com propriedade \"genres\" (formato TMDB)." });
+            return BadRequest(new { mensagem = "Envie um array JSON de gêneros ou um objeto com propriedade \"genres\" (formato TMDB)." });
 
         var extraidos = new List<(int TmdbId, string Nome)>();
         foreach (var el in arr.EnumerateArray())
@@ -68,7 +68,7 @@ public class GenerosController : ControllerBase
             if (tmdbId <= 0 || string.IsNullOrWhiteSpace(nome))
                 return BadRequest(new
                 {
-                    mensagem = "Cada género precisa de id (ou tmdbId) > 0 e de name (ou nome) não vazio."
+                    mensagem = "Cada gênero precisa de id (ou tmdbId) > 0 e de name (ou nome) não vazio."
                 });
 
             extraidos.Add((tmdbId, nome.Trim()));

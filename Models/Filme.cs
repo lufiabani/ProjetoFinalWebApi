@@ -7,7 +7,7 @@ public class Filme
 
     public int TmdbId { get; set; }
 
-    // Um género principal por filme (alinhado ao fluxo de importação TMDB).
+    // Um gênero principal por filme (alinhado ao fluxo de importação TMDB).
     public int GeneroId { get; set; }
     // Só para serialização/leitura com Include — na gravação basta GeneroId.
     public Genero? Genero { get; set; }

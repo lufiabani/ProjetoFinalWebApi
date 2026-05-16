@@ -86,7 +86,7 @@ public class AppDbContext : DbContext
             e.Property(u => u.NomeExibicao).HasMaxLength(256);
         });
 
-        // Filme: género obrigatório (Restrict ao apagar género com filmes) + detalhe 1:1 (Cascade).
+        // Filme: gênero obrigatório (Restrict ao apagar gênero com filmes) + detalhe 1:1 (Cascade).
         modelBuilder.Entity<Filme>(e =>
         {
             e.HasIndex(f => f.TmdbId).IsUnique();

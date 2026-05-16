@@ -145,7 +145,7 @@ public class FilmesController : ControllerBase
     }
 
     // POST /api/filmes/cache — upsert do filme + descrição; JsonElement evita model binding frágil em objetos aninhados.
-    // Aceita generoId (PK) ou generoTmdbId (+ generoNome opcional) para criar o género se ainda não existir.
+    // Aceita generoId (PK) ou generoTmdbId (+ generoNome opcional) para criar o gênero se ainda não existir.
     [Authorize]
     [HttpPost("cache")]
     public async Task<ActionResult<Filme>> UpsertCache([FromBody] JsonElement corpo, CancellationToken cancellationToken)
@@ -166,7 +166,7 @@ public class FilmesController : ControllerBase
             return BadRequest(new
             {
                 mensagem =
-                    "Indique generoId (existente na base) ou generoTmdbId (número do género no TMDB). " +
+                    "Indique generoId (existente na base) ou generoTmdbId (número do gênero no TMDB). " +
                     "Com generoTmdbId podes enviar generoNome para o rótulo."
             });
         }
@@ -226,7 +226,7 @@ public class FilmesController : ControllerBase
         return Ok(resultado);
     }
 
-    // Resolve género por PK local ou cria/reutiliza pelo TmdbId (fluxo de importação sem sync prévio de géneros).
+    // Resolve gênero por PK local ou cria/reutiliza pelo TmdbId (fluxo de importação sem sync prévio de gêneros).
     private async Task<int> ResolverOuCriarGeneroIdAsync(JsonElement corpo, CancellationToken cancellationToken)
     {
         if (TryGetInt32(corpo, "generoId", out var gid) && gid > 0 &&
@@ -242,7 +242,7 @@ public class FilmesController : ControllerBase
 
         var nome = TryGetString(corpo, "generoNome");
         if (string.IsNullOrWhiteSpace(nome))
-            nome = $"Género TMDB {gtmdb}";
+            nome = $"Gênero TMDB {gtmdb}";
 
         genero = new Genero { TmdbId = gtmdb, Nome = nome.Trim() };
         _db.Generos.Add(genero);

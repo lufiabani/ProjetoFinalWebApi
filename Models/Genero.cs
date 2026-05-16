@@ -1,6 +1,6 @@
 namespace DesenvWebApi.Api.Models;
 
-// Género de filme espelhado do TMDB (TmdbId único) para ligar filmes importados sem lista fixa manual.
+// Gênero de filme espelhado do TMDB (TmdbId único) para ligar filmes importados sem lista fixa manual.
 public class Genero
 {
     public int Id { get; set; }
