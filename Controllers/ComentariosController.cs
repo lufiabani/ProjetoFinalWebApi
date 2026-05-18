@@ -140,7 +140,7 @@ public class ComentariosController : ControllerBase
         return CreatedAtAction(nameof(PorFilme), new { filmeId = entrada.FilmeId }, resposta);
     }
 
-    // PUT /api/comentarios/{id} — só o autor; corpo parcial (texto) atualizado campo a campo.
+    // PUT /api/comentarios/{id} — só o autor; corpo parcial (texto); devolve o comentário atualizado (200).
     [Authorize]
     [HttpPut("{id:long}")]
     public async Task<IActionResult> Editar(long id, [FromBody] Comentario entrada, CancellationToken cancellationToken)
@@ -158,7 +158,19 @@ public class ComentariosController : ControllerBase
 
         comentario.Corpo = entrada.Corpo.Trim();
         await _db.SaveChangesAsync(cancellationToken);
-        return NoContent();
+
+        // Mesmo formato do POST e da listagem — o SPA atualiza o estado local com a resposta.
+        var resposta = new
+        {
+            comentario.Id,
+            comentario.Corpo,
+            comentario.CriadoEm,
+            comentario.EditadoEm,
+            AutorNome = usuario.NomeExibicao ?? usuario.Email,
+            SouAutor = true
+        };
+
+        return Ok(resposta);
     }
 
     // DELETE /api/comentarios/{id} — só o autor remove o próprio comentário; 200 com { mensagem } em sucesso.
