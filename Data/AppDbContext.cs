@@ -26,53 +26,70 @@ public class AppDbContext : DbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    switch (entry.Entity)
-                    {
-                        case Filme f:
-                            f.CriadoEm = utc;
-                            f.AtualizadoEm = utc;
-                            f.SincronizadoEm = utc;
-                            break;
-                        case Genero g:
-                            g.SincronizadoEm = utc;
-                            break;
-                        case Favorito fav:
-                            fav.AdicionadoEm = utc;
-                            break;
-                        case Comentario c:
-                            c.CriadoEm = utc;
-                            c.EditadoEm = utc;
-                            break;
-                        case FilmeDescricao d:
-                            d.CriadoEm = utc;
-                            d.AtualizadoEm = utc;
-                            break;
-                    }
-
+                    ConfigurarTimestampsCriacao(entry.Entity, utc);
                     break;
                 case EntityState.Modified:
-                    switch (entry.Entity)
-                    {
-                        case Filme f:
-                            f.AtualizadoEm = utc;
-                            f.SincronizadoEm = utc;
-                            break;
-                        case Genero g:
-                            g.SincronizadoEm = utc;
-                            break;
-                        case Comentario c:
-                            c.EditadoEm = utc;
-                            break;
-                        case FilmeDescricao d:
-                            d.AtualizadoEm = utc;
-                            break;
-                    }
-
+                    ConfigurarTimestampsAtualizacao(entry.Entity, utc);
                     break;
             }
         }
 
         return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    // Configura timestamps de criação para entidades novas.
+    private static void ConfigurarTimestampsCriacao(object entity, DateTime utc)
+    {
+        switch (entity)
+        {
+            case Filme f:
+                f.CriadoEm = utc;
+                f.AtualizadoEm = utc;
+                f.SincronizadoEm = utc;
+                break;
+            case Genero g:
+                g.SincronizadoEm = utc;
+                break;
+            case Favorito fav:
+                fav.AdicionadoEm = utc;
+                break;
+            case Comentario c:
+                c.CriadoEm = utc;
+                c.EditadoEm = utc;
+                break;
+            case FilmeDescricao d:
+                d.CriadoEm = utc;
+                d.AtualizadoEm = utc;
+                break;
+            case Usuario u:
+                u.CriadoEm = utc;
+                u.AtualizadoEm = utc;
+                break;
+        }
+    }
+
+    // Configura timestamps de atualização para entidades modificadas.
+    private static void ConfigurarTimestampsAtualizacao(object entity, DateTime utc)
+    {
+        switch (entity)
+        {
+            case Filme f:
+                f.AtualizadoEm = utc;
+                f.SincronizadoEm = utc;
+                break;
+            case Genero g:
+                g.SincronizadoEm = utc;
+                break;
+            case Comentario c:
+                c.EditadoEm = utc;
+                break;
+            case FilmeDescricao d:
+                d.AtualizadoEm = utc;
+                break;
+            case Usuario u:
+                u.AtualizadoEm = utc;
+                break;
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

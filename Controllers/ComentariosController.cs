@@ -44,6 +44,7 @@ public class ComentariosController : ControllerBase
 
         var linhas = await _db.Comentarios
             .AsNoTracking()
+            .Include(c => c.Usuario)
             .Where(c => c.FilmeId == filmeId && c.Visivel)
             .OrderByDescending(c => c.CriadoEm)
             .Select(c => new
@@ -52,7 +53,7 @@ public class ComentariosController : ControllerBase
                 c.Corpo,
                 c.CriadoEm,
                 c.EditadoEm,
-                AutorNome = c.Usuario!.NomeExibicao ?? c.Usuario.Email,
+                AutorNome = c.Usuario!.NomeExibicao ?? c.Usuario!.Email ?? "Usuário desconhecido",
                 c.UsuarioId
             })
             .ToListAsync(cancellationToken);
@@ -83,6 +84,8 @@ public class ComentariosController : ControllerBase
 
         var linhas = await _db.Comentarios
             .AsNoTracking()
+            .Include(c => c.Filme)
+            .Include(c => c.Usuario)
             .Where(c => c.Visivel)
             .OrderByDescending(c => c.CriadoEm)
             .Take(limite)
@@ -90,11 +93,11 @@ public class ComentariosController : ControllerBase
             {
                 c.Id,
                 c.FilmeId,
-                TituloFilme = c.Filme!.Titulo,
-                PosterPath = c.Filme.PosterPath,
+                TituloFilme = c.Filme!.Titulo ?? "Filme não encontrado",
+                PosterPath = c.Filme!.PosterPath,
                 c.Corpo,
                 c.CriadoEm,
-                AutorNome = c.Usuario!.NomeExibicao ?? c.Usuario.Email
+                AutorNome = c.Usuario!.NomeExibicao ?? c.Usuario!.Email ?? "Usuário desconhecido"
             })
             .ToListAsync(cancellationToken);
 

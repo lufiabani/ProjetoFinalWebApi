@@ -53,17 +53,8 @@ public class GenerosController : ControllerBase
             if (el.ValueKind != JsonValueKind.Object)
                 return BadRequest(new { mensagem = "Cada item da lista tem de ser um objeto." });
 
-            var tmdbId = 0;
-            if (el.TryGetProperty("tmdbId", out var tp) && tp.TryGetInt32(out var tv))
-                tmdbId = tv;
-            else if (el.TryGetProperty("id", out var idp) && idp.TryGetInt32(out var idv))
-                tmdbId = idv;
-
-            string? nome = null;
-            if (el.TryGetProperty("nome", out var np) && np.ValueKind == JsonValueKind.String)
-                nome = np.GetString();
-            else if (el.TryGetProperty("name", out var n2) && n2.ValueKind == JsonValueKind.String)
-                nome = n2.GetString();
+            var tmdbId = ExtrairTmdbId(el);
+            var nome = ExtrairNome(el);
 
             if (tmdbId <= 0 || string.IsNullOrWhiteSpace(nome))
                 return BadRequest(new
@@ -93,5 +84,25 @@ public class GenerosController : ControllerBase
 
         await _db.SaveChangesAsync(cancellationToken);
         return NoContent();
+    }
+
+    // Extrai o ID do TMDB das propriedades "tmdbId" ou "id" (fallback para compatibilidade).
+    private static int ExtrairTmdbId(JsonElement el)
+    {
+        if (el.TryGetProperty("tmdbId", out var tp) && tp.TryGetInt32(out var tv))
+            return tv;
+        if (el.TryGetProperty("id", out var idp) && idp.TryGetInt32(out var idv))
+            return idv;
+        return 0;
+    }
+
+    // Extrai o nome do gênero das propriedades "nome" ou "name" (fallback para compatibilidade).
+    private static string? ExtrairNome(JsonElement el)
+    {
+        if (el.TryGetProperty("nome", out var np) && np.ValueKind == JsonValueKind.String)
+            return np.GetString();
+        if (el.TryGetProperty("name", out var n2) && n2.ValueKind == JsonValueKind.String)
+            return n2.GetString();
+        return null;
     }
 }
